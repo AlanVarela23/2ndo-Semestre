@@ -1,12 +1,13 @@
+
 #include <iostream>
 
 class Atleta
 {
-protected: 
-     int Energia;
-     int Fuerza;
-     int Velocidad;
-     std::string Nombre;
+protected:
+    int Energia;
+    int Fuerza;
+    int Velocidad;
+    std::string Nombre;
 public:
     //Constructor Generico
     Atleta()
@@ -19,7 +20,7 @@ public:
     //Constructor especifico
     Atleta(int _energia, int _fuerza, int _velocidad, std::string _nombre)
     {
-       Energia = _energia;
+        Energia = _energia;
         Fuerza = _fuerza;
         Velocidad = _velocidad;
         Nombre = _nombre;
@@ -40,7 +41,7 @@ public:
     }
     void setVelocidad(int v)
     {
-        Velocidad= v;
+        Velocidad = v;
     }
     void setNombre(std::string n)
     {
@@ -63,7 +64,7 @@ public:
     {
         return Nombre;
     }
-    void incrementarVelocidad()
+    virtual void incrementarVelocidad()
     {
         Velocidad++;
     }
@@ -72,8 +73,8 @@ public:
         std::cout << "Energia: " << Energia << std::endl;
         std::cout << "Fuerza: " << Fuerza << std::endl;
         std::cout << "Velocidad: " << Velocidad << std::endl;
-        std::cout << "Nombre: " << Nombre <<"\n" << std::endl;
-    }   
+        std::cout << "Nombre: " << Nombre << "\n" << std::endl;
+    }
 };
 
 class Boxeador : public Atleta
@@ -84,10 +85,10 @@ protected:
     int peleas;
     int ganadas;
     int perdidas;
-    int KO;       
+    int KO;
 public:
     //Constructor Generico
-    Boxeador() : Atleta ()
+    Boxeador() : Atleta()
     {
         golpesPorCombo = 4;
         fuerzaGolpe = 10;
@@ -95,14 +96,14 @@ public:
         ganadas = 0;
         perdidas = 0;
         KO = 0;
-    }   
+    }
     //Constructor Especifico
-    Boxeador(int _energia, int _fuerza, int _velocidad, std::string _nombre, int _combo, int _fuerzaGolpe,int _peleas, int _ganadas, int _perdidas, int _ko)
+    Boxeador(int _energia, int _fuerza, int _velocidad, std::string _nombre, int _combo, int _fuerzaGolpe, int _peleas, int _ganadas, int _perdidas, int _ko)
     {
         Energia = _energia;
         Fuerza = _fuerza;
         Velocidad = _velocidad;
-        Nombre = _nombre; 
+        Nombre = _nombre;
         golpesPorCombo = _combo;
         fuerzaGolpe = _fuerzaGolpe;
         peleas = _peleas;
@@ -165,8 +166,8 @@ public:
     {
         return KO;
     }
-   //Metodos
-    void Golpear() 
+    //Metodos
+    void Golpear()
     {
         Energia -= 5;
         fuerzaGolpe = 10;
@@ -197,7 +198,7 @@ public:
         {
             ganadas++;
             KO++;
-           
+
         }
         else if (_ganar = 1)
         {
@@ -217,33 +218,49 @@ public:
         std::cout << "Peleas ganadas: " << ganadas << std::endl;
         std::cout << "Por KnockOut: " << KO << "\n" << std::endl;
     }
+    void incrementarVelocidad() override
+    {
+        Velocidad+=5;
+    }
 };
 class Ciclista : public Atleta
 {
-   
+
 
     void Transicion()
     {
-    
+
     }
 };
 class Corredor : public Atleta
 {
     void Correr()
     {
-        
+
     }
 };
+void carrera(Atleta* atleta1, Atleta* atleta2)
+{
+    atleta1->incrementarVelocidad();
+    atleta2->incrementarVelocidad();
+    
+    if (atleta1->getVelocidad() > atleta2->getVelocidad())
+    {
+        std::cout << atleta1->getNombre() << " gano la carrera\n\n" << std::endl;
+    }
+    else
+    {
+        std::cout << atleta2->getNombre() << " gano la carrera\n\n" << std::endl;
+    }
+    
+}
+
 int main()
 {
     Atleta Messi(100, 50, 200, "Messi");
     Messi.mostrarAtributos();
     Boxeador Canelo(100, 100, 100, "Canelo", 30, 1000, 30, 30, 0, 30);
     Canelo.mostrarAtributos();
-    Canelo.mostrarEstadisticas();
-    Canelo.Golpear();
-    Canelo.mostrarEstadisticas();
-    Canelo.Golpear(10, 50, 100);
-    Canelo.mostrarEstadisticas();
+    carrera(&Canelo, &Messi);
 
 }

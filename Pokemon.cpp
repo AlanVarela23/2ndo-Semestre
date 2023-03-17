@@ -1,6 +1,7 @@
 /* Alan Varela
-   27/02/22 1er cambio
-   06/03.23 2do cambio Herencia
+   27/02/22 clases
+   06/03.23 Herencia
+   17/03/23 polimorfismo
 */
 
 
@@ -14,7 +15,7 @@ protected:
     std::string Color;
     int Ataque;
     int Salud;
-public:    
+public:
     //Constructor Generico
     Pokemon()
     {
@@ -36,7 +37,7 @@ public:
     //Destructor
     ~Pokemon()
     {
-        std::cout<<"Pokemon "<<Nombre<<" ha sido destruido\n"<<std::endl;
+        std::cout << "Pokemon " << Nombre << " ha sido destruido\n" << std::endl;
     }
     //Setter
     void setNombre(std::string n)
@@ -76,39 +77,45 @@ public:
     {
         return Ataque;
     }
-    int getSalud() 
+    int getSalud()
     {
         return Salud;
     }
 
     void Sanar()
     {
-        Salud = 100;
+        Salud += (Salud * .40);
+        std::cout <<"\n" << Nombre << " se sano \nHP = " << Salud << std::endl;
     }
-    void mostrarAtributos() 
+    void mostrarAtributos()
     {
         std::cout << "Nombre: " << Nombre << std::endl;
         std::cout << "Tipo: " << Tipo << std::endl;
         std::cout << "Color: " << Color << std::endl;
         std::cout << "Ataque: " << Ataque << std::endl;
-        std::cout << "Salud: " << Salud <<"\n" << std::endl;
+        std::cout << "Salud: " << Salud << "\n" << std::endl;
     }
-    void evolucionarPokemon(std::string _nombre, std::string  _tipo, std::string _color) 
+    void evolucionarPokemon(std::string _nombre, std::string  _tipo, std::string _color)
     {
         Nombre = _nombre;
         Tipo = _tipo;
         Color = _color;
         Ataque *= 1.3;
     }
+    virtual void atacar(Pokemon* rival)
+    {
+        std::cout << Nombre << " ataco a " << rival->getNombre() << std::endl;
+        rival->setSalud((rival->getSalud() - Ataque));
+    }
 };
 class PokemonAgua : public Pokemon
 {
-protected:    
+protected:
     int tiempoEnAgua;
     int tiempoEnAire;
 public:
     //Constructor Generico
-    PokemonAgua() : Pokemon ()
+    PokemonAgua() : Pokemon()
     {
         tiempoEnAgua = 15;
         tiempoEnAire = 20;
@@ -153,19 +160,24 @@ public:
         tiempoEnAgua += 100;
         tiempoEnAire = 0;
     }
+    void atacar(Pokemon* rival) override
+    {
+        std::cout << Nombre << " ataco a " << rival->getNombre() << " con lanzamiento de agua" << std::endl;
+        rival->setSalud((rival->getSalud() - Ataque));
+    }
 };
 
 class PokemonPlanta : public Pokemon
 {
 protected:
     int tiempoVida;
-  
+
 public:
     //Constructor Generico
     PokemonPlanta() : Pokemon()
     {
         tiempoVida = 15;
-   
+
     }
     //Constructor Especifico 
     PokemonPlanta(std::string _nombre, std::string  _tipo, std::string _color, int _ataque, int _salud, int _tiempoVida)
@@ -196,6 +208,11 @@ public:
     void Fotosintesis()
     {
         tiempoVida += 50;
+    }
+    void atacar(Pokemon* rival) override
+    {
+        std::cout << Nombre << " ataco a " << rival->getNombre() << " con rocas" << std::endl;
+        rival->setSalud((rival->getSalud() - Ataque));
     }
 };
 
@@ -239,6 +256,11 @@ public:
     {
         temperatura += 100;
     }
+    void atacar(Pokemon* rival) override
+    {
+        std::cout << Nombre << " ataco a " << rival->getNombre() << " con llamas" << std::endl;
+        rival->setSalud((rival->getSalud() - Ataque));
+    }
 };
 
 class PokemonElectrico : public Pokemon
@@ -254,7 +276,7 @@ public:
         voltaje = 10;
         corriente = 50;
         potencia = 25;
-        
+
     }
     //Constructor Especifico 
     PokemonElectrico(std::string _nombre, std::string  _tipo, std::string _color, int _ataque, int _salud, int _voltaje, int _corriente, int _potencia)
@@ -305,17 +327,79 @@ public:
         voltaje += 15;
         potencia -= 5;
     }
+    void atacar(Pokemon* rival) override
+    {
+        std::cout << Nombre << " ataco a " << rival->getNombre() << " con rayos" << std::endl;
+        rival->setSalud((rival->getSalud() - Ataque));
+    }
 };
-int main()
+
+void combatePokemon(Pokemon* pokemon1, Pokemon* pokemon2)
 {
-    Pokemon Random;
-    Random.mostrarAtributos();
-    Pokemon Charmander("Charmander","Fuego","Naranja",30,100);
-    Charmander.mostrarAtributos();
-    Random.setNombre("Hola");
-    Charmander.evolucionarPokemon("Charmeleon", "Fuego", "Rojo");
-    Charmander.mostrarAtributos();
-    PokemonElectrico Pikachu("Pikachu", "Electrico", "Amarillo",  100,150,500,100,100);
-    Pikachu.mostrarAtributos();
+    srand(time(0));
+    int resp,npc=0;
+
+    while (pokemon1->getSalud() > 1 && pokemon2->getSalud() > 1)
+    {
+        if (pokemon1->getSalud() > 1)
+        {
+            std::cout << "Turno de " << pokemon1->getNombre() << std::endl;
+            do
+            { 
+                std::cout << "(1) Atacar\n(2) Sanar" << std::endl;
+                std::cin >> resp;
+                switch (resp)
+                {
+                case 1:
+                    pokemon1->atacar(pokemon2);
+                    break;
+                case 2:
+                    pokemon1->Sanar();
+                    break;
+                default:
+                    std::cout << "Elige una opcion valida" << std::endl;
+                    break;
+                }
+            } while (resp != 1 && resp != 2);
+            std::cout << "\nVida " << pokemon1->getNombre() << "= " << pokemon1->getSalud() << std::endl;
+            std::cout << "Vida " << pokemon2->getNombre() << "= " << pokemon2->getSalud() << std::endl;
+        }
+        if (pokemon2->getSalud() > 1)
+        {
+            npc =1 + rand() % 2;
+            switch (npc)
+            {
+            case 1:
+                pokemon2->atacar(pokemon1);
+                break;
+            case 2:
+                pokemon2->Sanar();
+                break;
+            }
+            std::cout << "\nVida " << pokemon1->getNombre() << "= " << pokemon1->getSalud() << std::endl;
+            std::cout << "Vida " << pokemon2->getNombre() << "= " << pokemon2->getSalud() << std::endl << std::endl;
+        }
+    }
+    if (pokemon1->getSalud() > 0)
+    {
+        std::cout << pokemon1->getNombre() << " ha ganado" << std::endl;
+        pokemon1->~Pokemon();
+    }
+    else
+    {
+        std::cout << pokemon2->getNombre() << " ha ganado\n\n" << std::endl;
+        pokemon2->~Pokemon();
+    }
+
 }
 
+int main()
+{
+    
+    Pokemon Charmander("Charmander", "Fuego", "Naranja", 30, 100);
+    Charmander.mostrarAtributos();
+    Charmander.evolucionarPokemon("Charmeleon", "Fuego", "Rojo");
+    Charmander.mostrarAtributos();
+    PokemonElectrico Pikachu("Pikachu", "Electrico", "Amarillo", 101, 150, 500, 101, 101);
+    combatePokemon(&Charmander, &Pikachu);
+}
